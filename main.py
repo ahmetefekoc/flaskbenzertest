@@ -7,7 +7,7 @@ import os
 
 app = Flask(__name__)
 
-HASH_FILE = "banned_hashes.json"
+HASH_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "banned_hashes.json")
 
 def load_hashes():
     if os.path.exists(HASH_FILE):
@@ -365,9 +365,9 @@ def compare():
     results = []
     for h in banned:
         stored = imagehash.hex_to_hash(h)
-        diff = uploaded_hash - stored          # 0 = birebir aynı, 64 = tamamen farklı
+        diff = int(uploaded_hash - stored)     # 0 = birebir aynı, 64 = tamamen farklı
         similarity = max(0, (64 - diff) / 64 * 100)
-        results.append({"hash": h, "diff": diff, "similarity": round(similarity, 2)})
+        results.append({"hash": h, "diff": diff, "similarity": round(float(similarity), 2)})
 
     results.sort(key=lambda x: x["similarity"], reverse=True)
     return jsonify({"results": results})
